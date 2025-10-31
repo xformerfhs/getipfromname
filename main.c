@@ -64,12 +64,15 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
 
    // 2. Loop through all returned address information records.
    char withSeparator = 0;
-   const struct addrinfo* res = results;
    char ip6addr_text[INET6_ADDRSTRLEN];  // All string representations go here. So it has the largest possible length.
    void* ipaddr;
    socklen_t ipaddr_len;
 
-   do {
+   for (
+      const struct addrinfo* res = results;
+      res != NULL;
+      res = res->ai_next
+      ) {
       if (withSeparator != 0)
          fputs(", ", stdout);
       else
@@ -88,7 +91,7 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
       inet_ntop(res->ai_family, ipaddr, ip6addr_text, ipaddr_len);
 
       fputs(ip6addr_text, stdout);
-   } while ((res = res->ai_next) != NULL);
+   }
 
    // 3. Clean up.
    freeaddrinfo(results);
