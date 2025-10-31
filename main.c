@@ -44,6 +44,13 @@
 /// Return code, when there was an error.
 #define RC_ERROR 1
 
+
+// ******** Private variables ********
+
+/// String representation of IP address.
+char ip6addr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the largest possible length.
+
+
 // ******** Private functions ********
 
 /// @brief Prints all ip addresses (4 and 6) of the given host name.
@@ -64,7 +71,6 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
 
    // 2. Loop through all returned address information records.
    char withSeparator = 0;
-   char ip6addr_text[INET6_ADDRSTRLEN];  // All string representations go here. So it has the largest possible length.
    void* ipaddr;
    socklen_t ipaddr_len;
 
