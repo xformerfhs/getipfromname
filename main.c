@@ -54,7 +54,7 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
    // 1. Get address information with the supplied hints.
    struct addrinfo * results;
    const int rc = getaddrinfo(hostname, NULL, hints, &results);
-   if (rc < 0) {
+   if (rc != 0) {
       fprintf(stderr, "Error getting address of host '%s': %s\n", hostname, gai_strerror(rc));
       return RC_ERROR;
    }
