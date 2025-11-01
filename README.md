@@ -8,19 +8,16 @@ A simple program to get the ip addresses for a host name on Linux systems.
 
 This is a simple program that returns all ip addresses that a given host name resolves to when querying the [DNS](https://en.wikipedia.org/wiki/Domain_Name_System).
 
-I wrote it, because I needed a lightweight program that checks, if the DNS client is working.
-It can also give a compact overview of the returned IP addresses.
+It gives a compact overview of the returned IP addresses and shows [IPv4](https://en.wikipedia.org/wiki/IPv4) and [IPV6](https://en.wikipedia.org/wiki/IPv6) addresses.
 
-It shows [IPv4](https://en.wikipedia.org/wiki/IPv4) and [IPV6](https://en.wikipedia.org/wiki/IPv6) addresses.
-
-When I wrote the program I searched quite a few places for examples and all of them very simply plain wrong or overly complicated.
-The documentation I found was also quite terse and difficult to understand, at least for me.
+The examples on the Internet are very often incorrect and only work by chance.
+The documentation is quite terse and difficult to understand.
 
 So this little utility may serve as an example of how to do DNS address lookups on Linux.
 
 ## Usage
 
-Just call it with a list of host names.
+The program is called with a list of host names.
 
 ## Return codes
 
