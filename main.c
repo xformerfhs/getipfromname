@@ -45,7 +45,7 @@
 /// Return code, when there was an error.
 #define RC_ERROR 1
 
-/// Data type for boolean variables
+/// Data type for boolean variables.
 #define BOOLEAN char
 
 /// Boolean value for false.
