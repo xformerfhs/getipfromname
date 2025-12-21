@@ -48,7 +48,7 @@
 // ******** Private variables ********
 
 /// String representation of IP address.
-char ip6addr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the largest possible length.
+char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the largest possible length.
 
 
 // ******** Private functions ********
@@ -94,9 +94,9 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
       }
 
       // There can be no error, so we do not test for one.
-      inet_ntop(res->ai_family, ipaddr, ip6addr_text, ipaddr_len);
+      inet_ntop(res->ai_family, ipaddr, ipaddr_text, ipaddr_len);
 
-      fputs(ip6addr_text, stdout);
+      fputs(ipaddr_text, stdout);
    }
 
    // 3. Clean up.
