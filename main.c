@@ -22,10 +22,11 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.0
+// Version: 1.0.1
 //
 // Change history:
 //    2025-10-31: V1.0.0: Created.
+//    2025-12-21: V1.0.1: Better variable naming, name boolean data type and constants.
 //
 
 #include <sys/socket.h>
@@ -43,6 +44,15 @@
 
 /// Return code, when there was an error.
 #define RC_ERROR 1
+
+/// Data type for boolean variables
+#define BOOLEAN char
+
+/// Boolean value for false.
+#define FALSE 0
+
+/// Boolean value fo true.
+#define TRUE 0x7f
 
 
 // ******** Private variables ********
@@ -70,7 +80,7 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
    fputs(" => (", stdout);
 
    // 2. Loop through all returned address information records.
-   char withSeparator = 0;
+   BOOLEAN withSeparator = FALSE;
    void* ipaddr;
    socklen_t ipaddr_len;
 
@@ -79,10 +89,10 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
       res != NULL;
       res = res->ai_next
       ) {
-      if (withSeparator != 0)
+      if (withSeparator != FALSE)
          fputs(", ", stdout);
       else
-         withSeparator = 0x7f;
+         withSeparator = TRUE;
 
       // The ip address starts on different boundaries, depending on the family.
       if (res->ai_family == AF_INET) {
