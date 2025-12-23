@@ -22,28 +22,24 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.1
+// Version: 1.0.2
 //
 // Change history:
 //    2025-10-31: V1.0.0: Created.
 //    2025-12-21: V1.0.1: Better variable naming, name boolean data type and constants.
+//    2025-12-23: V1.0.2: Simplified structure.
 //
 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
 
 
 // ******** Private constants ********
-
-/// Return code, when there was no error.
-#define RC_OK 0
-
-/// Return code, when there was an error.
-#define RC_ERROR 1
 
 /// Data type for boolean variables.
 #define BOOLEAN char
@@ -51,7 +47,7 @@
 /// Boolean value for false.
 #define FALSE 0
 
-/// Boolean value fo true.
+/// Boolean value for true.
 #define TRUE 0x7f
 
 
@@ -66,14 +62,14 @@ char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the large
 /// @brief Prints all ip addresses (4 and 6) of the given host name.
 /// @param hostname Host name.
 /// @param hints The hints to be used for address lookup.
-/// @return RC_OK, if there was no error; otherwise, RC_ERROR.
-int printHostAddresses(const char * const hostname, const struct addrinfo * const hints) {
+/// @return EXIT_SUCCESS, if there was no error; otherwise EXIT_FAILURE.
+int printHostAddresses(const char* const hostname, const struct addrinfo* const hints) {
    // 1. Get address information with the supplied hints.
    struct addrinfo * results;
    const int rc = getaddrinfo(hostname, NULL, hints, &results);
    if (rc != 0) {
       fprintf(stderr, "Error getting address of host \"%s\": %s\n", hostname, gai_strerror(rc));
-      return RC_ERROR;
+      return EXIT_FAILURE;
    }
 
    fputs(hostname, stdout);
@@ -94,7 +90,7 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
       else
          withSeparator = TRUE;
 
-      // The ip address starts on different boundaries, depending on the family.
+      // The ip address starts on different memory addresses, depending on the family.
       if (res->ai_family == AF_INET) {
          ipaddr = (void*) &((struct sockaddr_in *)res->ai_addr)->sin_addr;
          ipaddr_len = INET_ADDRSTRLEN;
@@ -114,32 +110,33 @@ int printHostAddresses(const char * const hostname, const struct addrinfo * cons
 
    puts(")");
 
-   return RC_OK;
+   return EXIT_SUCCESS;
 }
+
 
 // ******** Main function ********
 
 int main(const int argc, const char ** argv) {
-   if (argc > 1) {
-      // 1. Set hints for the getaddrinfo function.
-      //    They need to be initialized only once and can be reused for each call.
-      struct addrinfo hints = {0};
-
-      hints.ai_family = AF_UNSPEC;      // We want V4 and V6 addresses.
-      hints.ai_socktype = SOCK_STREAM;  // We are interested in streams, not datagrams.
-      hints.ai_protocol = IPPROTO_TCP;  // We want only addresses suitable for a TCP connection.
-      hints.ai_flags = AI_ADDRCONFIG;   // Only return address families that this system is configured to use.
-
-      // 2. Loop through all given arguments.
-      //    If any lookup fails, the program return code is RC_ERROR.
-      //    Otherwise, it is RC_OK.
-      int rc = RC_OK;
-      for (int i = 1; i < argc; i++)
-         rc |= printHostAddresses(argv[i], &hints);
-
-      return rc;
-   } else {
+   if (argc < 2) {
       fputs("No hostnames supplied\n", stderr);
-      return RC_ERROR;
+      return EXIT_FAILURE;
    }
+
+   // 1. Set hints for the getaddrinfo function.
+   //    They need to be initialized only once and can be reused for each call.
+   struct addrinfo hints = { 0 };
+
+   hints.ai_family = AF_UNSPEC;      // We want V4 and V6 addresses.
+   hints.ai_socktype = SOCK_STREAM;  // We are interested in streams, not datagrams.
+   hints.ai_protocol = IPPROTO_TCP;  // We want only addresses suitable for a TCP connection.
+   hints.ai_flags = AI_ADDRCONFIG;   // Only return address families that this system is configured to use.
+
+   // 2. Loop through all given arguments.
+   //    If any lookup fails, the program return code is EXIT_FAILURE.
+   //    Otherwise, it is EXIT_SUCCESS.
+   int rc = EXIT_SUCCESS;
+   for (int i = 1; i < argc; i++)
+      rc |= printHostAddresses(argv[i], &hints);
+
+   return rc;
 }
