@@ -34,12 +34,17 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
 
 
 // ******** Private constants ********
+
+/// Return code, when there was no error.
+#define RC_OK 0
+
+/// Return code, when there was an error.
+#define RC_ERROR 1
 
 /// Data type for boolean variables.
 #define BOOLEAN char
@@ -62,14 +67,14 @@ char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the large
 /// @brief Prints all ip addresses (4 and 6) of the given host name.
 /// @param hostname Host name.
 /// @param hints The hints to be used for address lookup.
-/// @return EXIT_SUCCESS, if there was no error; otherwise EXIT_FAILURE.
+/// @return RC_OK, if there was no error; otherwise RC_ERROR.
 int printHostAddresses(const char* const hostname, const struct addrinfo* const hints) {
    // 1. Get address information with the supplied hints.
    struct addrinfo * results;
    const int rc = getaddrinfo(hostname, NULL, hints, &results);
    if (rc != 0) {
       fprintf(stderr, "Error getting address of host \"%s\": %s\n", hostname, gai_strerror(rc));
-      return EXIT_FAILURE;
+      return RC_ERROR;
    }
 
    fputs(hostname, stdout);
@@ -110,7 +115,7 @@ int printHostAddresses(const char* const hostname, const struct addrinfo* const 
 
    puts(")");
 
-   return EXIT_SUCCESS;
+   return RC_OK;
 }
 
 
@@ -119,7 +124,7 @@ int printHostAddresses(const char* const hostname, const struct addrinfo* const 
 int main(const int argc, const char ** argv) {
    if (argc < 2) {
       fputs("No hostnames supplied\n", stderr);
-      return EXIT_FAILURE;
+      return RC_ERROR;
    }
 
    // 1. Set hints for the getaddrinfo function.
@@ -132,9 +137,9 @@ int main(const int argc, const char ** argv) {
    hints.ai_flags = AI_ADDRCONFIG;   // Only return address families that this system is configured to use.
 
    // 2. Loop through all given arguments.
-   //    If any lookup fails, the program return code is EXIT_FAILURE.
-   //    Otherwise, it is EXIT_SUCCESS.
-   int rc = EXIT_SUCCESS;
+   //    If any lookup fails, the program return code is RC_ERROR.
+   //    Otherwise, it is RC_OK.
+   int rc = RC_OK;
    for (int i = 1; i < argc; i++)
       rc |= printHostAddresses(argv[i], &hints);
 
