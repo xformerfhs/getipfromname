@@ -22,20 +22,21 @@
 //
 // Author: Frank Schwab
 //
-// Version: 1.0.2
+// Version: 1.1.0
 //
 // Change history:
 //    2025-10-31: V1.0.0: Created.
 //    2025-12-21: V1.0.1: Better variable naming, name boolean data type and constants.
 //    2025-12-23: V1.0.2: Simplified structure.
+//    2026-08-08: V1.1.0: Use standard boolean data type, use snake case.
 //
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <arpa/inet.h>
+#include <netdb.h>
 
 
 // ******** Private constants ********
@@ -46,20 +47,11 @@
 /// Return code, when there was an error.
 #define RC_ERROR 1
 
-/// Data type for boolean variables.
-#define BOOLEAN char
-
-/// Boolean value for false.
-#define FALSE 0
-
-/// Boolean value for true.
-#define TRUE 0x7f
-
 
 // ******** Private variables ********
 
 /// String representation of IP address.
-char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the largest possible length.
+static char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the largest possible length.
 
 
 // ******** Private functions ********
@@ -68,7 +60,7 @@ char ipaddr_text[INET6_ADDRSTRLEN];  // Is allocated only once and has the large
 /// @param hostname Host name.
 /// @param hints The hints to be used for address lookup.
 /// @return RC_OK, if there was no error; otherwise RC_ERROR.
-int printHostAddresses(const char* const hostname, const struct addrinfo* const hints) {
+static int print_host_addresses(const char* const hostname, const struct addrinfo* const hints) {
    // 1. Get address information with the supplied hints.
    struct addrinfo * results;
    const int rc = getaddrinfo(hostname, NULL, hints, &results);
@@ -81,7 +73,7 @@ int printHostAddresses(const char* const hostname, const struct addrinfo* const 
    fputs(" => (", stdout);
 
    // 2. Loop through all returned address information records.
-   BOOLEAN withSeparator = FALSE;
+   bool with_separator = false;
    void* ipaddr;
    socklen_t ipaddr_len;
 
@@ -90,10 +82,10 @@ int printHostAddresses(const char* const hostname, const struct addrinfo* const 
       res != NULL;
       res = res->ai_next
       ) {
-      if (withSeparator != FALSE)
+      if (with_separator)
          fputs(", ", stdout);
       else
-         withSeparator = TRUE;
+         with_separator = true;
 
       // The ip address starts on different memory addresses, depending on the family.
       if (res->ai_family == AF_INET) {
@@ -141,7 +133,7 @@ int main(const int argc, const char ** argv) {
    //    Otherwise, it is RC_OK.
    int rc = RC_OK;
    for (int i = 1; i < argc; i++)
-      rc |= printHostAddresses(argv[i], &hints);
+      rc |= print_host_addresses(argv[i], &hints);
 
    return rc;
 }
